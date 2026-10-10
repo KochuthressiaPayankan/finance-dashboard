@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Category {
+  id           Int            @id @default(autoincrement())
+  name         String         @unique
+  color        String         @default("#888888")
+  transactions Transaction[]
+  rules        CategoryRule[]
+}
+
+model CategoryRule {
+  id         Int      @id @default(autoincrement())
+  keyword    String
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+}
+
+model Transaction {
+  id          Int       @id @default(autoincrement())
+  date        DateTime
+  amount      Decimal   @db.Decimal(12, 2)
+  merchant    String
+  description String
+  hash        String    @unique
+  categoryId  Int?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  source      String    @default("csv")
+}
